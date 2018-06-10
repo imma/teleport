@@ -1,10 +1,21 @@
 #!/usr/bin/env bash
 
-function main {
+function bootstrap {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
 
-  uname -a
-}
+  local url_teleport_Darwin="https://get.gravitational.com/teleport-v${TELEPORT_VERSION}-darwin-amd64-bin.tar.gz"
+  local url_teleport_Linux="https://get.gravitational.com/teleport-v${TELEPORT_VERSION}-linux-amd64-bin.tar.gz"
 
-main "$@"
+  local url_teleport="url_teleport_$(uname -s)"
+  local fnm_teleport="$(basename "${!url_teleport}")-${teleport_VERSION}"
+  cache curl "$fnm_teleport" "${!url_teleport}"
+
+  cd "$shome"
+  mkdir -p "$shome/bin"
+  tar xvfz "${BASEBOX_CACHE}/curl/$fnm_teleport"
+  mv "$shome/teleport"/{tctl,tsh,teleport} "$shome/bin/"
+  rm -rf "$shome/teleport"
+} 
+
+bootstrap

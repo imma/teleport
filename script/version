@@ -4,7 +4,7 @@ function version {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
 
-  local ver_teleport="0.0.1"
+  local ver_teleport="$(teleport version 2>/dev/null | awk '{print $2}' | sed 's#^v##' || true)"
   jq -n --arg teleport "$ver_teleport" '{teleport: $teleport}'
 }
 
